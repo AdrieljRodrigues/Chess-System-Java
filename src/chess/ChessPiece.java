@@ -2,6 +2,7 @@ package chess;
 
 import boardgame.Board;
 import boardgame.Piece;
+import boardgame.Position;
 
 public abstract class ChessPiece extends Piece { //precisa de construtor
 
@@ -16,7 +17,10 @@ public abstract class ChessPiece extends Piece { //precisa de construtor
 		return color;
 	}
 
-
+	protected boolean isThereOpponentPiece(Position position) { //verifica se a uma peça opnoneten no caminho
+		ChessPiece p = (ChessPiece)getBoard().piece(position);
+		return p != null && p.getColor() != color;
+	}
 	
 	
 }
