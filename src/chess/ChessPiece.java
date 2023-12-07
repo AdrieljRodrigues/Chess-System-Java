@@ -16,6 +16,10 @@ public abstract class ChessPiece extends Piece { //precisa de construtor
 	public Color getColor() { //delete o set para não alterar a cor da peça
 		return color;
 	}
+	
+	public ChessPosition getChessPosition() {
+		return ChessPosition.fromPosition(position);
+	}
 
 	protected boolean isThereOpponentPiece(Position position) { //verifica se a uma peça opnoneten no caminho
 		ChessPiece p = (ChessPiece)getBoard().piece(position);
