@@ -7,6 +7,7 @@ import boardgame.Position;
 public abstract class ChessPiece extends Piece { //precisa de construtor
 
 	private Color color;
+	private int moveCount;
 
 	public ChessPiece(Board board, Color color) { //repassa ao construtor da classe Piece
 		super(board);
@@ -15,6 +16,18 @@ public abstract class ChessPiece extends Piece { //precisa de construtor
 
 	public Color getColor() { //delete o set para não alterar a cor da peça
 		return color;
+	}
+	
+	public int getMoveCount() {
+		return moveCount;
+	}
+
+	public void increaseMoveCount() {
+		moveCount++;
+	}
+
+	public void decreaseMoveCount() {
+		moveCount--;
 	}
 	
 	public ChessPosition getChessPosition() {
