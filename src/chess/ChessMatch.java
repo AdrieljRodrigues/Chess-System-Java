@@ -18,6 +18,7 @@ public class ChessMatch {
 	private Color currentPlayer;
 	private Board board;
 	private boolean check;
+	private boolean checkMate;
 	
 	private List<Piece> piecesOnTheBoard = new ArrayList<>();//lista de peças no tabuleiro
 	private List<Piece> capturedPieces = new ArrayList<>();//lista de peças capturadas
@@ -39,6 +40,10 @@ public class ChessMatch {
 	
 	public boolean getCheck() {
 		return check;
+	}
+	
+	public boolean getCheckMate() {
+		return checkMate;
 	}
 	
 	public ChessPiece[][] getPieces() {// retorna uma matriz de peças de xadrez, não permitindo o program principal
@@ -72,7 +77,13 @@ public class ChessMatch {
 
 		check = (testCheck(opponent(currentPlayer))) ? true : false;
 		
-		nextTurn();//proximo jogador
+		if (testCheckMate(opponent(currentPlayer))) {//testa se o jogo acabou
+			checkMate = true;
+		}
+		else {
+			nextTurn();//proximo jogador
+		}
+		
 		return (ChessPiece)capturedPiece;
 	}
 	
@@ -149,24 +160,42 @@ public class ChessMatch {
 		return false;
 	}
 	
+	private boolean testCheckMate(Color color) {
+		if (!testCheck(color)) {//testa se nao estar em check
+			return false;
+		}
+		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());//lista as peças da mesma cor
+		for (Piece p : list) {//percorre a lista
+			boolean[][] mat = p.possibleMoves();//percorre a matriz
+			for (int i=0; i<board.getRows(); i++) {//percorre as linhas da matriz
+				for (int j=0; j<board.getColumns(); j++) {//percorre as colunas da matriz
+					if (mat[i][j]) {//testa se o movimento o tira d check
+						Position source = ((ChessPiece)p).getChessPosition().toPosition();//converte a posição
+						Position target = new Position(i, j);//moviemnto possivel
+						Piece capturedPiece = makeMove(source, target);//faz o movimento
+						boolean testCheck = testCheck(color);//testa o check
+						undoMove(source, target, capturedPiece);//desfaz o movimento
+						if (!testCheck) {//testa se estava em check
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;//check mate
+	}	
+	
 	private void placeNewPiece(char column, int row, ChessPiece piece) {
 		board.placePiece(piece, new ChessPosition(column, row).toPosition());
 		piecesOnTheBoard.add(piece);//peças no tabuleiro
 	}
 	
 	private void initialSetup() {
-		placeNewPiece('c', 1, new Rook(board, Color.WHITE));
-        placeNewPiece('c', 2, new Rook(board, Color.WHITE));
-        placeNewPiece('d', 2, new Rook(board, Color.WHITE));
-        placeNewPiece('e', 2, new Rook(board, Color.WHITE));
-        placeNewPiece('e', 1, new Rook(board, Color.WHITE));
-        placeNewPiece('d', 1, new King(board, Color.WHITE));
-
-        placeNewPiece('c', 7, new Rook(board, Color.BLACK));
-        placeNewPiece('c', 8, new Rook(board, Color.BLACK));
-        placeNewPiece('d', 7, new Rook(board, Color.BLACK));
-        placeNewPiece('e', 7, new Rook(board, Color.BLACK));
-        placeNewPiece('e', 8, new Rook(board, Color.BLACK));
-        placeNewPiece('d', 8, new King(board, Color.BLACK));
+		  placeNewPiece('h', 7, new Rook(board, Color.WHITE));
+	      placeNewPiece('d', 1, new Rook(board, Color.WHITE));
+	      placeNewPiece('e', 1, new King(board, Color.WHITE));
+       
+	      placeNewPiece('b', 8, new Rook(board, Color.BLACK));
+	      placeNewPiece('a', 8, new King(board, Color.BLACK));
 	}
 }
